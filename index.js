@@ -31,6 +31,7 @@ async function run() {
 
     const addCart = client.db('ecomerceElectronics').collection('popularProducts')
     const addCartPost = client.db('ecomerceElectronics').collection('addCartPost')
+    const addWishlist = client.db('ecomerceElectronics').collection('wishlist')
 
 
     app.get('/popularProducts', async (req, res) => {
@@ -43,6 +44,20 @@ async function run() {
         return res.send({ message: 'data not found' })
       }
       const result = addCartPost.insertOne(data);
+      res.send(result)
+    })
+
+    app.post('/wishlist', async (req, res) => {
+      const data = req.body;
+      if (!data) {
+        return res.send({ message: 'data not found' })
+      }
+      const result = addWishlist.insertOne(data);
+      res.send(result)
+    })
+
+    app.get('/wishlist',async(req,res) =>{
+      const result = await addWishlist.find().toArray();
       res.send(result)
     })
 
