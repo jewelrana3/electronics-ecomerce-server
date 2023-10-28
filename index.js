@@ -56,15 +56,26 @@ async function run() {
       res.send(result)
     })
 
-    app.get('/wishlist',async(req,res) =>{
+    app.get('/wishlist', async (req, res) => {
       const result = await addWishlist.find().toArray();
       res.send(result)
+
+    })
+   
+
+
+    app.delete('/wishlist/:id', async (req, res) => {
+      const id = req.params.id;
+      const data = { _id: new ObjectId(id) };
+      const result = await addWishlist.deleteOne(data)
+      res.send(result)
+
     })
 
     app.get('/addCartPost', async (req, res) => {
       const result = await addCartPost.find().toArray();
       res.send(result)
-    
+
     })
 
     app.get('/addCartPost/:id', async (req, res) => {
@@ -72,7 +83,7 @@ async function run() {
       const result = await addCartPost.findOne({ _id: new ObjectId(id) })
       res.send(result)
     })
-   
+
 
 
     // Send a ping to confirm a successful connection
