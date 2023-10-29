@@ -55,6 +55,13 @@ async function run() {
       const result = addWishlist.insertOne(data);
       res.send(result)
     })
+     
+    app.delete('/addCartPost/:id',async(req,res)=>{
+      const id = req.params.id;
+      const query = {_id:new ObjectId(id)};
+      const result = await addCartPost.deleteOne(query)
+      res.send(result)
+    })
 
     app.get('/wishlist', async (req, res) => {
       const result = await addWishlist.find().toArray();
