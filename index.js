@@ -32,6 +32,8 @@ async function run() {
     const addCart = client.db('ecomerceElectronics').collection('popularProducts')
     const addCartPost = client.db('ecomerceElectronics').collection('addCartPost')
     const addWishlist = client.db('ecomerceElectronics').collection('wishlist')
+    const addUsers = client.db('ecomerceElectronics').collection('users')
+    const addPayments = client.db('ecomerceElectronics').collection('Payments')
 
 
     app.get('/popularProducts', async (req, res) => {
@@ -52,7 +54,7 @@ async function run() {
       if (!data) {
         return res.send({ message: 'data not found' })
       }
-      const result = addWishlist.insertOne(data);
+      const result = await addWishlist.insertOne(data);
       res.send(result)
     })
      
@@ -91,11 +93,22 @@ async function run() {
       res.send(result)
     })
 
+    app.post('/users',async(req,res) =>{
+      const data = req.body;
+      const result = await addUsers.insertOne(data);
+      res.send(result)
+    })
+
+    app.post('/payments',async(req,res) =>{
+      const payment = req.body;
+      const result = await addPayments.insertOne(payment);
+      res.send(result)
+    })
+
     // PAYMENT INTENT 
     app.post('/create-payment-intent',async (req,res) =>{
       const {prices} = req.body;
       const amount = prices*100;
-      console.log(prices,amount)
       const paymentIntent = await stripe.paymentIntents.create({
         amount:amount,
         currency:'usd',
