@@ -105,6 +105,13 @@ async function run() {
       res.send(result)
     })
 
+    app.get('/payments/:id',async(req,res) =>{
+      const id = req.params.id;
+      const data = {_id: new ObjectId(id)}
+      const payment = await addPayments.findOne(data)
+      res.send(payment)
+    })
+
     // PAYMENT INTENT 
     app.post('/create-payment-intent',async (req,res) =>{
       const {prices} = req.body;
