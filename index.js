@@ -105,13 +105,36 @@ async function run() {
       res.send(result)
     })
 
-    app.get('/payments/:id',async(req,res) =>{
-      const id = req.params.id;
-      const data = {_id: new ObjectId(id)}
-      const payment = await addPayments.findOne(data)
+    app.get('/payments',async(req,res) =>{
+      const payment = await addPayments.find().toArray();
       res.send(payment)
     })
 
+    // app.get('/payments/:id',async(req,res) =>{
+    //   const id = req.params.id;
+    //   const data = {_id: new ObjectId(id)}
+    //   const payment = await addPayments.findOne(data)
+    //   res.send(payment)
+    // })
+   
+
+    app.get('/payments/ka', async (req, res) => {
+      try {
+        // Retrieve the first payment among the first 10 in the collection
+        const payment = await addPayments.find().sort({_id:-1}).limit(1).next();
+    
+        if (!payment) {
+          return res.status(404).json({ error: 'No payments found' });
+        }
+    
+        // Send the payment data as a JSON response
+        res.json(payment);
+      } catch (error) {
+        console.error('Error retrieving payment:', error);
+        res.status(500).send('Internal Server Error');
+      }
+    });
+    
     // PAYMENT INTENT 
     app.post('/create-payment-intent',async (req,res) =>{
       const {prices} = req.body;
