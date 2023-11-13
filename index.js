@@ -3,7 +3,8 @@ const app = express();
 const cors = require('cors');
 require('dotenv').config()
 const stripe = require('stripe')(process.env.PAYMENT_SECRET_KEY)
-const port = process.env.PORT || 5000
+const port = process.env.PORT || 5000;
+
 
 // midleware
 app.use(cors());
@@ -34,6 +35,7 @@ async function run() {
     const addWishlist = client.db('ecomerceElectronics').collection('wishlist')
     const addUsers = client.db('ecomerceElectronics').collection('users')
     const addPayments = client.db('ecomerceElectronics').collection('Payments')
+    const allData = client.db('ecomerceElectronics').collection('allData')
 
 
     app.get('/popularProducts', async (req, res) => {
@@ -57,10 +59,10 @@ async function run() {
       const result = await addWishlist.insertOne(data);
       res.send(result)
     })
-     
-    app.delete('/addCartPost/:id',async(req,res)=>{
+
+    app.delete('/addCartPost/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id:new ObjectId(id)};
+      const query = { _id: new ObjectId(id) };
       const result = await addCartPost.deleteOne(query)
       res.send(result)
     })
@@ -70,7 +72,7 @@ async function run() {
       res.send(result)
 
     })
-   
+
 
 
     app.delete('/wishlist/:id', async (req, res) => {
@@ -93,19 +95,19 @@ async function run() {
       res.send(result)
     })
 
-    app.post('/users',async(req,res) =>{
+    app.post('/users', async (req, res) => {
       const data = req.body;
       const result = await addUsers.insertOne(data);
       res.send(result)
     })
 
-    app.post('/payments',async(req,res) =>{
+    app.post('/payments', async (req, res) => {
       const payment = req.body;
       const result = await addPayments.insertOne(payment);
       res.send(result)
     })
 
-    app.get('/payments',async(req,res) =>{
+    app.get('/payments', async (req, res) => {
       const payment = await addPayments.find().toArray();
       res.send(payment)
     })
@@ -116,17 +118,17 @@ async function run() {
     //   const payment = await addPayments.findOne(data)
     //   res.send(payment)
     // })
-   
+
 
     app.get('/payments/ka', async (req, res) => {
       try {
         // Retrieve the first payment among the first 10 in the collection
-        const payment = await addPayments.find().sort({_id:-1}).limit(1).next();
-    
+        const payment = await addPayments.find().sort({ _id: -1 }).limit(1).next();
+
         if (!payment) {
           return res.status(404).json({ error: 'No payments found' });
         }
-    
+
         // Send the payment data as a JSON response
         res.json(payment);
       } catch (error) {
@@ -134,18 +136,54 @@ async function run() {
         res.status(500).send('Internal Server Error');
       }
     });
-    
+
+    // shop data
+    //   app.get('/allData/products', (req, res) => {
+    //     const { priceRange } = req.query;
+
+    //     // Check if priceRange is provided
+    //     if (priceRange) {
+    //         // Filter products based on priceRange
+    //         const filteredProducts = allData.filter(product => {
+    //             if (priceRange === 'low') {
+    //                 return product.price <= 500;
+    //             } else if (priceRange === 'high') {
+    //                 return product.price > 500;
+    //             }
+    //         });
+
+    //         // Sort filtered products by price
+    //         const sortedProducts = filteredProducts.sort((a, b) => a.price - b.price);
+    //         console.log(sortedProducts)
+    //         return res.json(sortedProducts);
+    //     }
+
+    //     // If priceRange is not provided, return all products
+    //     res.json(allData);
+    // });
+
+    // app.get('/allData', async (req, res) => {
+    //   const products = await allData.find({}).sort({ price: 1 }).toArray();
+    //   const lowPriceProducts = products.filter(product => product.price <= 500);
+    //   const highPriceProducts = products.filter(product => product.price > 500);
+    //   const categorizedProducts = {
+    //     lowPrice: lowPriceProducts,
+    //     highPrice: highPriceProducts,
+    //   };
+  
+    //   res.send(categorizedProducts)
+    // })
     // PAYMENT INTENT 
-    app.post('/create-payment-intent',async (req,res) =>{
-      const {prices} = req.body;
-      const amount = prices*100;
+    app.post('/create-payment-intent', async (req, res) => {
+      const { prices } = req.body;
+      const amount = prices * 100;
       const paymentIntent = await stripe.paymentIntents.create({
-        amount:amount,
-        currency:'usd',
-        payment_method_types:['card']
+        amount: amount,
+        currency: 'usd',
+        payment_method_types: ['card']
       });
       res.send({
-        clientSecret:paymentIntent.client_secret
+        clientSecret: paymentIntent.client_secret
       })
     })
 
