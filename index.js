@@ -36,6 +36,9 @@ async function run() {
     const addUsers = client.db('ecomerceElectronics').collection('users')
     const addPayments = client.db('ecomerceElectronics').collection('Payments')
     const allData = client.db('ecomerceElectronics').collection('allData')
+    const products = client.db('ecomerceElectronics').collection('products')
+    const oneData = client.db('ecomerceElectronics').collection('oneData')
+    const aboutMan = client.db('ecomerceElectronics').collection('aboutMan')
 
 
     app.get('/popularProducts', async (req, res) => {
@@ -101,6 +104,11 @@ async function run() {
       res.send(result)
     })
 
+    app.get('/users',async(req,res) =>{
+      const users = await addUsers.find().toArray()
+      res.send(users)
+    })
+
     app.post('/payments', async (req, res) => {
       const payment = req.body;
       const result = await addPayments.insertOne(payment);
@@ -111,14 +119,6 @@ async function run() {
       const payment = await addPayments.find().toArray();
       res.send(payment)
     })
-
-    // app.get('/payments/:id',async(req,res) =>{
-    //   const id = req.params.id;
-    //   const data = {_id: new ObjectId(id)}
-    //   const payment = await addPayments.findOne(data)
-    //   res.send(payment)
-    // })
-
 
     app.get('/payments/ka', async (req, res) => {
       try {
@@ -137,42 +137,6 @@ async function run() {
       }
     });
 
-    // shop data
-    //   app.get('/allData/products', (req, res) => {
-    //     const { priceRange } = req.query;
-
-    //     // Check if priceRange is provided
-    //     if (priceRange) {
-    //         // Filter products based on priceRange
-    //         const filteredProducts = allData.filter(product => {
-    //             if (priceRange === 'low') {
-    //                 return product.price <= 500;
-    //             } else if (priceRange === 'high') {
-    //                 return product.price > 500;
-    //             }
-    //         });
-
-    //         // Sort filtered products by price
-    //         const sortedProducts = filteredProducts.sort((a, b) => a.price - b.price);
-    //         console.log(sortedProducts)
-    //         return res.json(sortedProducts);
-    //     }
-
-    //     // If priceRange is not provided, return all products
-    //     res.json(allData);
-    // });
-
-    // app.get('/allData', async (req, res) => {
-    //   const products = await allData.find({}).sort({ price: 1 }).toArray();
-    //   const lowPriceProducts = products.filter(product => product.price <= 500);
-    //   const highPriceProducts = products.filter(product => product.price > 500);
-    //   const categorizedProducts = {
-    //     lowPrice: lowPriceProducts,
-    //     highPrice: highPriceProducts,
-    //   };
-  
-    //   res.send(categorizedProducts)
-    // })
     // PAYMENT INTENT 
     app.post('/create-payment-intent', async (req, res) => {
       const { prices } = req.body;
@@ -187,6 +151,21 @@ async function run() {
       })
     })
 
+    // products
+    app.get('/products',async(req,res)=>{
+      const result = await products.find().toArray()
+      res.send(result)
+    })
+
+    app.get('/oneData',async(req,res)=>{
+      const result = await oneData.find().toArray()
+      res.send(result)
+    })
+
+    app.get('/aboutMan',async(req,res)=>{
+      const result = await aboutMan.find().toArray()
+      res.send(result)
+    })
 
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
