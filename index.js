@@ -28,7 +28,7 @@ async function run() {
 
 
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const addCart = client.db('ecomerceElectronics').collection('popularProducts')
     const addCartPost = client.db('ecomerceElectronics').collection('addCartPost')
@@ -63,12 +63,31 @@ async function run() {
       res.send(result)
     })
 
+    // app.delete('/addCartPost/:id', async (req, res) => {
+    //   const id = req.params.id;
+    //   const query = { _id: new ObjectId(id) };
+    //   const result = await addCartPost.deleteOne(query)
+    //   res.send(result)
+    // })
     app.delete('/addCartPost/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
-      const result = await addCartPost.deleteOne(query)
-      res.send(result)
-    })
+    
+      try {
+        const result = await addCartPost.deleteOne(query);
+    
+        // Check if the deletion was successful
+        if (result.deletedCount === 1) {
+          res.send({ message: 'Document deleted successfully' });
+        } else {
+          res.status(404).send({ message: 'Document not found' });
+        }
+      } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: 'Internal server error' });
+      }
+    });
+    
 
     app.get('/wishlist', async (req, res) => {
       const result = await addWishlist.find().toArray();
